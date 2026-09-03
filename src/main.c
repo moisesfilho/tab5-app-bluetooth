@@ -43,19 +43,10 @@ static void update_bt_view(void)
     }
 }
 
-static void on_refresh_clicked(void *user_data)
-{
-    (void)user_data;
-    tab5_sound_play_beep(1400, 30);
-    update_bt_view();
-    tab5_ui_show_toast("Status Bluetooth atualizado", 1500);
-}
-
 static void app_init(void)
 {
     tab5_system_log(2, "tab5_bt", "Aplicativo Bluetooth iniciado");
     tab5_ui_app_bar_set_title("Bluetooth");
-    tab5_ui_app_bar_add_action_button("LV_SYMBOL_REFRESH", on_refresh_clicked, NULL);
     update_bt_view();
 }
 

@@ -10,7 +10,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_BT_DEVICES 16
+/* Keep the app buffer in sync with BT_SCAN_MAX_DEVICES in bt_mgr.h.  The
+ * bridge can return up to twenty records; sixteen silently truncated the
+ * result even after a successful scan. */
+#define MAX_BT_DEVICES 20
 
 static tab5_bt_dev_t s_devs[MAX_BT_DEVICES] = {0};
 static tab5_ui_obj_t s_dev_btn_handles[MAX_BT_DEVICES] = {0};
@@ -89,7 +92,15 @@ static void scan_bt_devices(void)
             }
         }
     } else {
-        tab5_ui_list_add_btn(s_list_devices, LV_SYMBOL_CLOSE, "Nenhum dispositivo BLE encontrado");
+        const char *message = "Nenhum dispositivo BLE encontrado";
+        if (!tab5_bt_is_enabled()) {
+            message = "Bluetooth desabilitado";
+        } else if (err == TAB5_ERR_TIMEOUT) {
+            message = "Tempo esgotado ao buscar dispositivos BLE";
+        } else if (err != TAB5_OK) {
+            message = "Falha ao buscar dispositivos BLE";
+        }
+        tab5_ui_list_add_btn(s_list_devices, LV_SYMBOL_CLOSE, message);
     }
 }
 
@@ -330,4 +341,3 @@ TAB5_APP_EXPORT int main(int argc, char **argv)
     app_init();
     return 0;
 }
-
